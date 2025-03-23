@@ -3,10 +3,11 @@ import { useState } from "react";
 import { StudentList } from "./StudentList";
 import { StudentFilters } from "./StudentFilters";
 import { StudentStats } from "./StudentStats";
+import { AddStudentDialog } from "./AddStudentDialog";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Download, FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const StudentsView = () => {
@@ -33,12 +34,12 @@ export const StudentsView = () => {
     // In a real app, this would generate a printable report
   };
 
-  const handleAddStudent = () => {
+  const handleStudentAdded = () => {
+    // Refresh student list or update state as needed
     toast({
-      title: "Add Student Feature",
-      description: "This feature would open a student creation form",
+      title: "Student Added",
+      description: "New student has been successfully added to the system",
     });
-    // In a real app, this would open a form or modal
   };
 
   const isTeacher = user?.role === "teacher";
@@ -62,10 +63,7 @@ export const StudentsView = () => {
         </div>
         <div className="flex items-center gap-2">
           {(isAdmin || isTeacher) && (
-            <Button onClick={handleAddStudent}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Student
-            </Button>
+            <AddStudentDialog onStudentAdded={handleStudentAdded} />
           )}
           <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />

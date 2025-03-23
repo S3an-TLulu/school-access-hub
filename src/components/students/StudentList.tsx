@@ -1,5 +1,5 @@
-
 import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -238,13 +238,6 @@ export const StudentList = ({
     return true;
   });
 
-  const handleViewStudent = (studentId: string) => {
-    toast({
-      title: "View Student",
-      description: `Viewing student profile for ID: ${studentId}`,
-    });
-  };
-
   const handleEditStudent = (studentId: string) => {
     toast({
       title: "Edit Student",
@@ -415,9 +408,11 @@ export const StudentList = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleViewStudent(student.id)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Profile
+                        <DropdownMenuItem asChild>
+                          <Link to={`/student/${student.id}`}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Profile
+                          </Link>
                         </DropdownMenuItem>
                         {(isAdmin || isTeacher) && (
                           <DropdownMenuItem onClick={() => handleEditStudent(student.id)}>

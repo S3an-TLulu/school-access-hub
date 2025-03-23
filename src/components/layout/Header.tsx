@@ -2,7 +2,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Bell, Search, User, LogOut } from 'lucide-react';
+import { Menu, Bell, Search, User, LogOut, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,9 +15,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { NavigationPanel } from './NavigationPanel';
+import { Switch } from '@/components/ui/switch';
+import { useTheme } from '@/context/ThemeContext';
 
 export const Header = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -100,6 +103,20 @@ export const Header = () => {
                 <DropdownMenuItem className="gap-2">
                   <User className="h-4 w-4" />
                   <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {theme === 'dark' ? (
+                      <Moon className="h-4 w-4" />
+                    ) : (
+                      <Sun className="h-4 w-4" />
+                    )}
+                    <span>Dark Mode</span>
+                  </div>
+                  <Switch 
+                    checked={theme === 'dark'}
+                    onCheckedChange={toggleTheme}
+                  />
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2" onClick={logout}>
                   <LogOut className="h-4 w-4" />
