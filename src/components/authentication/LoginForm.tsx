@@ -96,6 +96,7 @@ export const LoginForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="bg-background/50 dark:bg-background/10"
           />
         </div>
         <div className="space-y-2">
@@ -121,6 +122,7 @@ export const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="bg-background/50 dark:bg-background/10"
           />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
@@ -133,7 +135,7 @@ export const LoginForm = () => {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-background dark:bg-background/20 px-2 text-muted-foreground">
             Demo Accounts
           </span>
         </div>
@@ -146,7 +148,7 @@ export const LoginForm = () => {
             variant="outline"
             size="sm"
             onClick={() => handleDemoLogin(cred)}
-            className="text-xs capitalize"
+            className="text-xs capitalize bg-background/50 dark:bg-background/10 dark:hover:bg-background/20"
           >
             {cred.role}
           </Button>
