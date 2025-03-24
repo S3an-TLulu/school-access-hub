@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FeesManagement } from '@/components/settings/FeesManagement';
+import { BulkDataUpload } from '@/components/settings/BulkDataUpload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserRole } from '@/types';
 
@@ -64,11 +65,11 @@ const Settings = () => {
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
                 <CardDescription>
-                  Manage users, roles and permissions.
+                  Manage users, roles, permissions and bulk data imports.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p>User management functionality coming soon.</p>
+              <CardContent className="space-y-6">
+                <BulkDataUpload />
               </CardContent>
             </Card>
           </TabsContent>
