@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,12 +29,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-// Define the type of data that can be uploaded
 interface UploadType {
   id: string;
   name: string;
   description: string;
   sampleHeaders: string[];
+  templateFilename: string;
 }
 
 export const BulkDataUpload = () => {
@@ -45,38 +44,40 @@ export const BulkDataUpload = () => {
   const [previewData, setPreviewData] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Define different types of uploads
   const uploadTypes: UploadType[] = [
     {
       id: 'students',
       name: 'Students Data',
       description: 'Upload student information including name, grade, and section',
-      sampleHeaders: ['Name', 'Grade', 'Section', 'Admission Number', 'Parent Name', 'Parent Contact']
+      sampleHeaders: ['Name', 'Grade', 'Section', 'Admission Number', 'Parent Name', 'Parent Contact'],
+      templateFilename: 'students_template.xlsx'
     },
     {
       id: 'attendance',
       name: 'Attendance Records',
       description: 'Upload daily attendance records for students',
-      sampleHeaders: ['Student ID', 'Date', 'Status', 'Remarks']
+      sampleHeaders: ['Student ID', 'Date', 'Status', 'Remarks'],
+      templateFilename: 'attendance_template.xlsx'
     },
     {
       id: 'lunch',
       name: 'Lunch Records',
       description: 'Upload lunch participation and meal preferences',
-      sampleHeaders: ['Student ID', 'Date', 'Meal Type', 'Participation', 'Special Requirements']
+      sampleHeaders: ['Student ID', 'Date', 'Meal Type', 'Participation', 'Special Requirements'],
+      templateFilename: 'lunch_template.xlsx'
     },
     {
       id: 'transport',
       name: 'Transport Records',
       description: 'Upload transport route and pickup details',
-      sampleHeaders: ['Student ID', 'Route Number', 'Pickup Location', 'Pickup Time', 'Drop Location', 'Drop Time']
+      sampleHeaders: ['Student ID', 'Route Number', 'Pickup Location', 'Pickup Time', 'Drop Location', 'Drop Time'],
+      templateFilename: 'transport_template.xlsx'
     }
   ];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check if it's an Excel file
       if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
           file.type === 'application/vnd.ms-excel' ||
           file.name.endsWith('.xlsx') ||
@@ -96,8 +97,6 @@ export const BulkDataUpload = () => {
   };
 
   const generatePreview = (file: File) => {
-    // In a real application, you would use a library like xlsx to parse the Excel file
-    // For this example, we'll simulate a preview with mock data
     const mockPreviewData = [
       { id: 1, name: "John Doe", grade: "5", section: "A" },
       { id: 2, name: "Jane Smith", grade: "5", section: "B" },
@@ -120,7 +119,6 @@ export const BulkDataUpload = () => {
     setIsUploading(true);
     
     try {
-      // Simulate an upload process
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
@@ -128,12 +126,10 @@ export const BulkDataUpload = () => {
         description: `${selectedFile.name} has been processed successfully.`,
       });
       
-      // Reset the form
       setSelectedFile(null);
       setPreviewData([]);
       setIsDialogOpen(false);
       
-      // Reset the file input
       const fileInput = document.getElementById('file-upload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
       
@@ -146,6 +142,40 @@ export const BulkDataUpload = () => {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const downloadTemplate = () => {
+    if (!uploadType) {
+      toast({
+        title: "Missing information",
+        description: "Please select a data type first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const selectedUploadTypeObj = uploadTypes.find(type => type.id === uploadType);
+    
+    if (!selectedUploadTypeObj) {
+      toast({
+        title: "Error",
+        description: "Invalid data type selected",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Template downloaded",
+      description: `${selectedUploadTypeObj.templateFilename} has been downloaded.`,
+    });
+
+    const link = document.createElement('a');
+    link.href = '#';
+    link.setAttribute('download', selectedUploadTypeObj.templateFilename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const selectedUploadType = uploadTypes.find(type => type.id === uploadType);
@@ -177,6 +207,17 @@ export const BulkDataUpload = () => {
 
         {uploadType && (
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Button 
+                onClick={downloadTemplate} 
+                variant="outline" 
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download Template
+              </Button>
+            </div>
+            
             <div className="rounded-md border border-dashed p-6 text-center">
               <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
               <h3 className="mt-2 text-sm font-medium">Upload {selectedUploadType?.name}</h3>
