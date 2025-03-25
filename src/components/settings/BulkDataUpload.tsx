@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Upload, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -35,6 +36,7 @@ interface UploadType {
   description: string;
   sampleHeaders: string[];
   templateFilename: string;
+  templateData: { [key: string]: string }[];
 }
 
 export const BulkDataUpload = () => {
@@ -50,28 +52,44 @@ export const BulkDataUpload = () => {
       name: 'Students Data',
       description: 'Upload student information including name, grade, and section',
       sampleHeaders: ['Name', 'Grade', 'Section', 'Admission Number', 'Parent Name', 'Parent Contact'],
-      templateFilename: 'students_template.xlsx'
+      templateFilename: 'students_template.xlsx',
+      templateData: [
+        { 'Name': 'John Doe', 'Grade': '5', 'Section': 'A', 'Admission Number': 'ST001', 'Parent Name': 'Jane Doe', 'Parent Contact': '1234567890' },
+        { 'Name': 'Jane Smith', 'Grade': '5', 'Section': 'B', 'Admission Number': 'ST002', 'Parent Name': 'John Smith', 'Parent Contact': '0987654321' }
+      ]
     },
     {
       id: 'attendance',
       name: 'Attendance Records',
       description: 'Upload daily attendance records for students',
       sampleHeaders: ['Student ID', 'Date', 'Status', 'Remarks'],
-      templateFilename: 'attendance_template.xlsx'
+      templateFilename: 'attendance_template.xlsx',
+      templateData: [
+        { 'Student ID': 'ST001', 'Date': '2023-10-01', 'Status': 'Present', 'Remarks': '' },
+        { 'Student ID': 'ST002', 'Date': '2023-10-01', 'Status': 'Absent', 'Remarks': 'Sick leave' }
+      ]
     },
     {
       id: 'lunch',
       name: 'Lunch Records',
       description: 'Upload lunch participation and meal preferences',
       sampleHeaders: ['Student ID', 'Date', 'Meal Type', 'Participation', 'Special Requirements'],
-      templateFilename: 'lunch_template.xlsx'
+      templateFilename: 'lunch_template.xlsx',
+      templateData: [
+        { 'Student ID': 'ST001', 'Date': '2023-10-01', 'Meal Type': 'Regular', 'Participation': 'Yes', 'Special Requirements': '' },
+        { 'Student ID': 'ST002', 'Date': '2023-10-01', 'Meal Type': 'Vegetarian', 'Participation': 'Yes', 'Special Requirements': 'No nuts' }
+      ]
     },
     {
       id: 'transport',
       name: 'Transport Records',
       description: 'Upload transport route and pickup details',
       sampleHeaders: ['Student ID', 'Route Number', 'Pickup Location', 'Pickup Time', 'Drop Location', 'Drop Time'],
-      templateFilename: 'transport_template.xlsx'
+      templateFilename: 'transport_template.xlsx',
+      templateData: [
+        { 'Student ID': 'ST001', 'Route Number': 'R1', 'Pickup Location': 'Main St', 'Pickup Time': '7:30 AM', 'Drop Location': 'School', 'Drop Time': '8:00 AM' },
+        { 'Student ID': 'ST002', 'Route Number': 'R2', 'Pickup Location': 'Park Ave', 'Pickup Time': '7:45 AM', 'Drop Location': 'School', 'Drop Time': '8:15 AM' }
+      ]
     }
   ];
 
@@ -164,18 +182,42 @@ export const BulkDataUpload = () => {
       });
       return;
     }
-
-    toast({
-      title: "Template downloaded",
-      description: `${selectedUploadTypeObj.templateFilename} has been downloaded.`,
+    
+    // Create CSV content from the template data
+    const headers = selectedUploadTypeObj.sampleHeaders;
+    let csvContent = headers.join(',') + '\n';
+    
+    // Add sample data rows
+    selectedUploadTypeObj.templateData.forEach(row => {
+      const rowData = headers.map(header => {
+        // Escape commas and quotes in the values
+        const value = String(row[header] || '');
+        return value.includes(',') || value.includes('"') 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      });
+      csvContent += rowData.join(',') + '\n';
     });
-
+    
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    // Create a download link and trigger download
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = '#';
-    link.setAttribute('download', selectedUploadTypeObj.templateFilename);
+    link.href = url;
+    link.setAttribute('download', selectedUploadTypeObj.templateFilename.replace('.xlsx', '.csv'));
     document.body.appendChild(link);
     link.click();
+    
+    // Clean up
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Template downloaded",
+      description: `${selectedUploadTypeObj.templateFilename.replace('.xlsx', '.csv')} has been downloaded.`,
+    });
   };
 
   const selectedUploadType = uploadTypes.find(type => type.id === uploadType);
@@ -229,7 +271,7 @@ export const BulkDataUpload = () => {
                 type="file"
                 className="mt-4"
                 onChange={handleFileChange}
-                accept=".xlsx,.xls"
+                accept=".xlsx,.xls,.csv"
               />
             </div>
 
@@ -310,3 +352,4 @@ export const BulkDataUpload = () => {
     </Card>
   );
 };
+
