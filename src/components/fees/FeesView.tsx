@@ -4,10 +4,12 @@ import { FeesStats } from "./FeesStats";
 import { FeesFilters } from "./FeesFilters";
 import { FeesTable } from "./FeesTable";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileDown } from "lucide-react";
+import { PlusCircle, FileDown, Receipt } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { ReceiptGenerator } from "./ReceiptGenerator";
+import { NewFeeForm } from "./NewFeeForm";
 
 export const FeesView = () => {
   const { toast } = useToast();
@@ -15,12 +17,12 @@ export const FeesView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [showReceiptGenerator, setShowReceiptGenerator] = useState(false);
+  const [showNewFeeForm, setShowNewFeeForm] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<any>(null);
 
   const handleNewPayment = () => {
-    toast({
-      title: "Record new payment",
-      description: "Payment recording form opened",
-    });
+    setShowNewFeeForm(true);
   };
 
   const handleExport = () => {
@@ -28,6 +30,11 @@ export const FeesView = () => {
       title: "Export initiated",
       description: "Fees report is being generated",
     });
+  };
+
+  const handleGenerateReceipt = (paymentData: any) => {
+    setSelectedReceipt(paymentData);
+    setShowReceiptGenerator(true);
   };
 
   const isFinanceOrAdmin = user?.role === 'finance' || user?.role === 'admin';
@@ -43,10 +50,16 @@ export const FeesView = () => {
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
           {isFinanceOrAdmin && (
-            <Button onClick={handleNewPayment} size="sm">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Record Payment
-            </Button>
+            <>
+              <Button onClick={handleNewPayment} size="sm">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Record Payment
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowReceiptGenerator(true)}>
+                <Receipt className="mr-2 h-4 w-4" />
+                Generate Receipt
+              </Button>
+            </>
           )}
           <Button variant="outline" size="sm" onClick={handleExport}>
             <FileDown className="mr-2 h-4 w-4" />
@@ -79,6 +92,7 @@ export const FeesView = () => {
             gradeFilter={selectedGrade}
             statusFilter={selectedStatus}
             feeType="tuition"
+            onGenerateReceipt={handleGenerateReceipt}
           />
         </TabsContent>
         <TabsContent value="lunch">
@@ -87,6 +101,7 @@ export const FeesView = () => {
             gradeFilter={selectedGrade}
             statusFilter={selectedStatus}
             feeType="lunch"
+            onGenerateReceipt={handleGenerateReceipt}
           />
         </TabsContent>
         <TabsContent value="transport">
@@ -95,6 +110,7 @@ export const FeesView = () => {
             gradeFilter={selectedGrade}
             statusFilter={selectedStatus}
             feeType="transport"
+            onGenerateReceipt={handleGenerateReceipt}
           />
         </TabsContent>
         <TabsContent value="uniforms">
@@ -103,9 +119,21 @@ export const FeesView = () => {
             gradeFilter={selectedGrade}
             statusFilter={selectedStatus}
             feeType="uniforms"
+            onGenerateReceipt={handleGenerateReceipt}
           />
         </TabsContent>
       </Tabs>
+
+      <ReceiptGenerator 
+        open={showReceiptGenerator} 
+        onOpenChange={setShowReceiptGenerator}
+        receiptData={selectedReceipt}
+      />
+
+      <NewFeeForm
+        open={showNewFeeForm}
+        onOpenChange={setShowNewFeeForm}
+      />
     </div>
   );
 };

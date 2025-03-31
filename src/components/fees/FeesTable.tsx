@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +12,9 @@ interface FeesTableProps {
   gradeFilter: string;
   statusFilter: string;
   feeType: "tuition" | "lunch" | "transport" | "uniforms";
+  onGenerateReceipt?: (data: any) => void;
 }
 
-// Mock fees data
 const FEES_DATA = [
   {
     id: 1,
@@ -159,23 +158,24 @@ const FEES_DATA = [
   }
 ];
 
-export const FeesTable = ({ searchTerm, gradeFilter, statusFilter, feeType }: FeesTableProps) => {
+export const FeesTable = ({ 
+  searchTerm, 
+  gradeFilter, 
+  statusFilter, 
+  feeType,
+  onGenerateReceipt 
+}: FeesTableProps) => {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Filter fees data based on props
   const filteredData = FEES_DATA.filter((record) => {
-    // Apply search filter
     const matchesSearch = record.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          record.studentId.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Apply grade filter
     const gradeMatch = gradeFilter === "all" || record.grade === gradeFilter;
     
-    // Apply status filter
     const statusMatch = statusFilter === "all" || record.status === statusFilter;
     
-    // Apply fee type filter
     const feeTypeMatch = record.feeType === feeType;
     
     return matchesSearch && gradeMatch && statusMatch && feeTypeMatch;
@@ -195,11 +195,24 @@ export const FeesTable = ({ searchTerm, gradeFilter, statusFilter, feeType }: Fe
     });
   };
 
-  const handleGenerateReceipt = (id: number) => {
-    toast({
-      title: "Generate Receipt",
-      description: `Generating receipt for payment ID: ${id}`,
-    });
+  const handleGenerateReceipt = (record: any) => {
+    if (onGenerateReceipt) {
+      onGenerateReceipt({
+        receiptNumber: `GHA-${Math.floor(Math.random() * 10000)}`,
+        studentName: record.studentName,
+        studentId: record.studentId,
+        paymentDate: format(record.lastPaymentDate || new Date(), "yyyy-MM-dd"),
+        paymentAmount: record.amountPaid,
+        paymentMethod: record.paymentMethod || "cash",
+        paymentFor: record.feeType,
+        paymentStatus: record.status
+      });
+    } else {
+      toast({
+        title: "Generate Receipt",
+        description: `Generating receipt for payment ID: ${record.id}`,
+      });
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -295,16 +308,16 @@ export const FeesTable = ({ searchTerm, gradeFilter, statusFilter, feeType }: Fe
                         <span className="sr-only">Edit</span>
                       </Button>
                     )}
-                    {record.status === 'paid' || record.status === 'partial' ? (
+                    {(record.status === 'paid' || record.status === 'partial') && (
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        onClick={() => handleGenerateReceipt(record.id)}
+                        onClick={() => handleGenerateReceipt(record)}
                       >
                         <Receipt className="h-4 w-4" />
                         <span className="sr-only">Receipt</span>
                       </Button>
-                    ) : null}
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
