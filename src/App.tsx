@@ -18,6 +18,7 @@ import Library from "./pages/Library";
 import Calendar from "./pages/Calendar";
 import Communications from "./pages/Communications";
 import StudentProfile from "./pages/StudentProfile";
+import Academics from "./pages/Academics";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/library" element={<Library />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/communications" element={<Communications />} />
+              <Route path="/academics" element={<Academics />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
