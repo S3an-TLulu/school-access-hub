@@ -1,4 +1,3 @@
-
 export interface UploadType {
   id: string;
   name: string;
@@ -12,12 +11,26 @@ export const uploadTypes: UploadType[] = [
   {
     id: 'students',
     name: 'Students Data',
-    description: 'Upload student information including name, grade, and section',
-    sampleHeaders: ['Name', 'Grade', 'Section', 'Admission Number', 'Parent Name', 'Parent Contact'],
+    description: 'Upload student information including first name, last name, grade, and section',
+    sampleHeaders: ['First Name', 'Last Name', 'Grade', 'Section', 'Parent Name', 'Parent Contact'],
     templateFilename: 'students_template.xlsx',
     templateData: [
-      { 'Name': 'John Doe', 'Grade': '5', 'Section': 'A', 'Admission Number': 'ST001', 'Parent Name': 'Jane Doe', 'Parent Contact': '1234567890' },
-      { 'Name': 'Jane Smith', 'Grade': '5', 'Section': 'B', 'Admission Number': 'ST002', 'Parent Name': 'John Smith', 'Parent Contact': '0987654321' }
+      { 
+        'First Name': 'John', 
+        'Last Name': 'Doe', 
+        'Grade': '5', 
+        'Section': 'A', 
+        'Parent Name': 'Jane Doe', 
+        'Parent Contact': '1234567890' 
+      },
+      { 
+        'First Name': 'Jane', 
+        'Last Name': 'Smith', 
+        'Grade': '5', 
+        'Section': 'B', 
+        'Parent Name': 'John Smith', 
+        'Parent Contact': '0987654321' 
+      }
     ]
   },
   {

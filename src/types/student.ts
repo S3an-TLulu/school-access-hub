@@ -1,11 +1,11 @@
 
 export interface Student {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   grade: string;
   gradeValue: string;
   section: string;
-  admissionNumber: string;
   status: string;
   attendance: { 
     present: number; 
