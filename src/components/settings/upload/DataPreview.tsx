@@ -12,14 +12,16 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
+import { Student } from '@/types/student';
 
 interface DataPreviewProps {
   file: File;
-  previewData: any[];
+  previewData: Partial<Student>[];
   onUpload: () => Promise<void>;
+  uploadType: string;
 }
 
-export const DataPreview = ({ file, previewData, onUpload }: DataPreviewProps) => {
+export const DataPreview = ({ file, previewData, onUpload, uploadType }: DataPreviewProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -28,6 +30,10 @@ export const DataPreview = ({ file, previewData, onUpload }: DataPreviewProps) =
     try {
       await onUpload();
       setIsDialogOpen(false);
+      toast({
+        title: "Upload successful",
+        description: "Student data has been successfully imported.",
+      });
     } catch (error) {
       toast({
         title: "Upload failed",
@@ -39,6 +45,40 @@ export const DataPreview = ({ file, previewData, onUpload }: DataPreviewProps) =
     }
   };
 
+  const renderPreviewHeaders = () => {
+    if (uploadType === 'students') {
+      return (
+        <TableRow>
+          <TableHead>ID</TableHead>
+          <TableHead>First Name</TableHead>
+          <TableHead>Last Name</TableHead>
+          <TableHead>Grade</TableHead>
+          <TableHead>Section</TableHead>
+          <TableHead>Parent Info</TableHead>
+        </TableRow>
+      );
+    }
+    // Add other upload types preview headers here
+    return null;
+  };
+
+  const renderPreviewRow = (row: any) => {
+    if (uploadType === 'students') {
+      return (
+        <TableRow key={row.id}>
+          <TableCell>{row.id}</TableCell>
+          <TableCell>{row.firstName}</TableCell>
+          <TableCell>{row.lastName}</TableCell>
+          <TableCell>{row.grade}</TableCell>
+          <TableCell>{row.section}</TableCell>
+          <TableCell>{`${row.parent} (${row.parentContact})`}</TableCell>
+        </TableRow>
+      );
+    }
+    // Add other upload types preview rows here
+    return null;
+  };
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -46,7 +86,7 @@ export const DataPreview = ({ file, previewData, onUpload }: DataPreviewProps) =
           Preview Data
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Data Preview</DialogTitle>
           <DialogDescription>
@@ -56,22 +96,10 @@ export const DataPreview = ({ file, previewData, onUpload }: DataPreviewProps) =
         <div className="max-h-[400px] overflow-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Grade</TableHead>
-                <TableHead>Section</TableHead>
-              </TableRow>
+              {renderPreviewHeaders()}
             </TableHeader>
             <TableBody>
-              {previewData.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.grade}</TableCell>
-                  <TableCell>{row.section}</TableCell>
-                </TableRow>
-              ))}
+              {previewData.map((row) => renderPreviewRow(row))}
             </TableBody>
           </Table>
         </div>

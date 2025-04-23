@@ -1,16 +1,40 @@
-
 import { toast } from '@/hooks/use-toast';
 import { UploadType } from './types';
+import { nanoid } from 'nanoid';
 
-export const generatePreview = (file: File) => {
+export const generatePreview = (file: File, uploadType: string) => {
   // This is a mock preview generator that would be replaced with actual Excel parsing
-  const mockPreviewData = [
-    { id: 1, name: "John Doe", grade: "5", section: "A" },
-    { id: 2, name: "Jane Smith", grade: "5", section: "B" },
-    { id: 3, name: "Bob Johnson", grade: "6", section: "A" },
-  ];
-  
-  return mockPreviewData;
+  if (uploadType === 'students') {
+    return [
+      {
+        id: nanoid(),
+        firstName: "John",
+        lastName: "Doe",
+        grade: "Grade 5",
+        section: "A",
+        parent: "Jane Doe",
+        parentContact: "1234567890",
+        status: "active",
+        attendance: { present: 0, absent: 0, total: 0, percentage: 0 },
+        fees: { total: 0, paid: 0, pending: 0, status: "pending" },
+        performance: 0
+      },
+      {
+        id: nanoid(),
+        firstName: "Jane",
+        lastName: "Smith",
+        grade: "Grade 5",
+        section: "B",
+        parent: "John Smith",
+        parentContact: "0987654321",
+        status: "active",
+        attendance: { present: 0, absent: 0, total: 0, percentage: 0 },
+        fees: { total: 0, paid: 0, pending: 0, status: "pending" },
+        performance: 0
+      }
+    ];
+  }
+  return [];
 };
 
 export const downloadTemplate = (uploadType: string, uploadTypes: UploadType[]) => {
